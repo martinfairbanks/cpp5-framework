@@ -4,17 +4,17 @@
 	Demonstration of different 3D shapes.
 */
 
-#include "../../framework/creative_framework.h"
+#include "../cpp5_framework.h"
 f32 angle = 0.f;
 
 void setup()
 {
-	createCanvas(960, 540, false, "3D Shapes");
+	createCanvas(960, 540, "3D Shapes");
 	//set3dProjection(windowWidth,windowHeight, 120.0f, 0.1f, 500.0f);
 	set3dProjection();
 }
 
-void updateAndDraw()
+void draw()
 {
 	clear(c64blue);
 	glLoadIdentity();

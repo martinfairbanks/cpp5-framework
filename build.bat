@@ -5,7 +5,7 @@ set LinkerFlags=-incremental:no -opt:ref -subsystem:windows
 IF NOT EXIST build mkdir build
 pushd build
     REM 64-bit debug build with statically linked c-runtime library
-    cl %CompilerFlags% ../examples/input.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../examples/3d_shapes.cpp -link %LinkerFlags%
 
     REM 64-bit build release build with dynamically linked c-runtime library
     REM cl -MD ..\examples\input.cpp -link -subsystem:windows
