@@ -1,0 +1,67 @@
+version(1);
+project_name = "Cpp5 Framework";
+
+patterns = { "*.c", "*.h", "*.cpp"
+};
+
+blacklist_patterns = {
+"*.bat",
+};
+
+load_paths = {
+	{ {
+	  {".", .realtive = true, .recursive = false, }
+	  }, .os = "win"},
+};
+
+
+command_list =  {
+	{
+		.name = "build",
+		.out = "*compilation*",
+		.footer_panel = true,
+		.save_dirty_files = true,
+		.cursor_at_end = false,
+		.cmd = {
+			{ "build.bat", .os = "win" },
+		},
+	},
+
+	{
+		.name = "run",
+		.out = "*compilation*",
+		.footer_panel = true,
+		.save_dirty_files = true,
+		.cursor_at_end = false,
+		.cmd = {
+			{ "pushd ..\build && input.exe && popd", .os = "win" },
+		},
+	},
+
+	{
+		.name = "debug",
+		.out = "*compilation*",
+		.footer_panel = true,
+		.save_dirty_files = true,
+		.cursor_at_end = false,
+		.cmd = {
+			{ "devenv ..\build\input.exe", .os = "win" },
+		},
+	},
+
+	{
+		.name = "build_and_run",
+		.out = "*compilation*",
+		.footer_panel = true,
+		.save_dirty_files = true,
+		.cursor_at_end = false,
+		.cmd = {
+			{ "build.bat && pushd ..\build && input.exe && popd", .os = "win" },
+		},
+	},
+};
+
+fkey_command[5] = "build";
+fkey_command[6] = "run";
+fkey_command[7] = "debug";
+fkey_command[8] = "build_and_run";
