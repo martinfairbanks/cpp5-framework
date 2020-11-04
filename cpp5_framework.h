@@ -1,15 +1,4 @@
-﻿/*
-    TODO: release build
-          check and document all functions
-
-          software renderer
-          opengl renderer in a file
-          nocrt - sin cos
-*/
-
-#define COMPILER_MSVC 1
-
-#pragma comment(lib, "user32.lib")
+﻿#pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
 #pragma comment(lib, "Xinput9_1_0.lib")
 #pragma comment(lib, "opengl32.lib")
@@ -17,11 +6,6 @@
 
 #define WIN32_LEAN_AND_MEAN
 #define WIN32_EXTRA_LEAN
-
-#define _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_DEPRECATE
-
-#pragma warning( disable : 4100; disable : 4201; disable: 4996 )
 
 #ifdef NOCRT
 #define _NO_CRT_STDIO_INLINE

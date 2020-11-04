@@ -71,7 +71,7 @@ void draw()
 	clear(90, 80, 140);
 	stroke(0, 255, 0);
 	fill(col);
-	line(0, 10, 90, 10);
+	
 	if (mousePressed(MOUSE_LEFT))
 	{
 		fill(blue);
