@@ -1,7 +1,9 @@
 ﻿/* 	3D Shapes 
-	by Martin Fairbanks
-
-	Demonstration of different 3D shapes.
+	Copyright (c) 2020 Martin Fairbanks
+   	This example has been created using the cpp5 framework.
+    Licensing information can be found in the cpp5_framework.h file.
+	
+	Demonstration of basic 3D shapes that can be drawn using the framework.
 */
 
 #include "../cpp5_framework.h"
@@ -10,16 +12,15 @@ f32 angle = 0.f;
 void setup()
 {
 	createCanvas(960, 540, "3D Shapes");
-	//set3dProjection(windowWidth,windowHeight, 120.0f, 0.1f, 500.0f);
 	set3dProjection();
 }
 
 void draw()
 {
 	clear(c64blue);
-	glLoadIdentity();
 	translate(10.f, -15.f, -80.f);
-	//draw cube
+
+	// draw cube
 	pushMatrix();
 		fill(magenta);
 		translate(-55.f, 0.f, 0.f);
@@ -29,7 +30,7 @@ void draw()
 		cube(8);
 	popMatrix();
 
-	//draw plane
+	// draw plane
 	pushMatrix();
 		fill(blue);
 		translate(-30.f, 0.f, 0.f);
@@ -39,7 +40,7 @@ void draw()
 		plane(20, 20);
 	popMatrix();
 
-	//draw sphere
+	// draw sphere
 	pushMatrix();
 		fill(pink);
 		translate(0.f, 0.0f, 0.f);
@@ -50,7 +51,7 @@ void draw()
 		sphere(10);
 	popMatrix();
 
-	//draw torus
+	// draw torus
 	pushMatrix();
 		fill(green);
 		translate(40.f, 0.0f, 0.f);
@@ -61,7 +62,7 @@ void draw()
 		torus(12, 6);
 	popMatrix();
 
-	//draw box
+	// draw box
 	pushMatrix();
 		fill(c64cyan);
 		translate(-55.f, 35.f, 0.f);
@@ -71,7 +72,7 @@ void draw()
 		box(5, 10, 15);
 	popMatrix();
 
-	//draw cone
+	// draw cone
 	pushMatrix();
 		fill(purple);
 		translate(-25.f, 35.f, 0.f);
@@ -81,7 +82,7 @@ void draw()
 		cone(10, 20);
 	popMatrix();
 
-	//draw cylinder
+	// draw cylinder
 	pushMatrix();
 		fill(yellow);
 		translate(0.f, 35.f, 0.f);
@@ -91,7 +92,7 @@ void draw()
 		cylinder(10, 20);
 	popMatrix();
 
-	//draw pyramid
+	// draw pyramid
 	pushMatrix();
 		fill(red);
 		noFill();
@@ -105,4 +106,4 @@ void draw()
 	angle += deltaTime*20;
 }
 
-void shutdown() { }
+void cleanup() { }

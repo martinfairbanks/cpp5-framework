@@ -1,26 +1,34 @@
-﻿#pragma comment(lib, "user32.lib")
+﻿/*  Cpp5 Framework - A small implementation in C++ (mostly C) of the Processing and p5.js frameworks.
+    Copyright (c) 2020 Martin Fairbanks
+
+    Licensing information can be found at the end of the file.
+*/
+
+#pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
 #pragma comment(lib, "Xinput9_1_0.lib")
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
-
-#define WIN32_LEAN_AND_MEAN
-#define WIN32_EXTRA_LEAN
 
 #ifdef NOCRT
 #define _NO_CRT_STDIO_INLINE
 int _fltused; // for floating point
 #endif
 
-#include <windows.h> // for messagebox
+#include <windows.h>
 #include <stdint.h> // types
 #include <stdio.h> // for vsprintf_s
 #include <xinput.h>
 #include <gl/gl.h>
 #include <gl/glu.h> // gluOrtho2D
 #include <math.h>
+#include <malloc.h> 
 
-//#include <stdarg.h> //for vsprintf_s
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "dependencies/include/stb_image.h"
+#include "dependencies/include/stb_image_write.h"
+
 typedef int8_t i8;
 typedef int16_t i16;
 typedef int32_t i32;
@@ -34,12 +42,16 @@ typedef float f32;
 typedef double f64;
 typedef size_t sizeT; // size_t is 64 bits on 64bit builds and 32-bit on 32bit builds
 
+#define internal static
+#define local static
+#define global static
+
 #define arrayCount(a) (sizeof(a) / sizeof(a[0]))
 #define arrayColumns(a) (sizeof(a[0]) / sizeof(a[0][0]))
 #define arrayRows(a) (sizeof(a) / sizeof(a[0]))
 
 inline void
-zeroSize(void *memory, sizeT size)
+clearMemory(void *memory, sizeT size)
 {
     u8 *byte = (u8 *)memory;
     while (size--) {
@@ -47,18 +59,19 @@ zeroSize(void *memory, sizeT size)
     }
 }
 
-#define zeroArray(a) zeroSize(a, sizeof(a))
-#define zeroStruct(a) zeroSize(&(a), sizeof(a))
+#define clearArray(a) clearMemory(a, sizeof(a))
+#define clearStruct(a) clearMemory(&(a), sizeof(a))
 
 #if DEVELOPER
-void
-debugPrint(char *format, ...) {
+#include <crtdbg.h> // memory leaks
+
+void debugPrint(char *format, ...) {
     static char buffer[1024];
     va_list args;
     va_start(args, format);
     vsprintf_s(buffer, sizeof(buffer), format, args);
     va_end(args);
-#if COMPILER_MSVC
+#if DEBUGGER_MSVC
     OutputDebugStringA(buffer);
 #else
     printf("%s\n", buffer);
@@ -66,14 +79,27 @@ debugPrint(char *format, ...) {
 }
 
 #define debugPrintVariable(var) debugPrint(#var" = %d\n", var);
+#define Assert(x) if (!(x)) { MessageBoxA(0, #x, "Assertion Failure", MB_OK); __debugbreak(); }
+#else
+#define Assert(x)
 #endif
 
+internal void
+quitError(const char *errorMessage, ...)
+{
+    char buffer[256];
+    va_list args;
+    va_start(args, errorMessage);
+    vsprintf_s(buffer, sizeof(buffer), errorMessage, args);
+    va_end(args);
+    //	OutputDebugStringA(buffer);
+    MessageBoxA(0, buffer, "Fatal Error", MB_ICONERROR);
+    ExitProcess(1);
+}
 
 //
 // Data Structures
 // 
-
-#include <malloc.h> 
 
 // dynamic array
 struct Array {
@@ -190,35 +216,6 @@ static T *stb__sbgrowf(T *arr, int increment, int itemsize) {
     return (T *)stb__raw_sbgrowf((void *)arr, increment, itemsize);
 }
 
-#define internal static
-#define local static
-#define global static
-
-internal void
-quitError(const char *errorMessage, ...)
-{
-#ifdef DEVELOPER
-    char buffer[256];
-    va_list args;
-    va_start(args, errorMessage);
-    vsprintf_s(buffer, sizeof(buffer), errorMessage, args);
-    va_end(args);
-    //	OutputDebugStringA(buffer);
-    MessageBoxA(0, buffer, "Fatal Error", MB_ICONERROR);
-    ExitProcess(1);
-#endif
-}
-
-#if DEVELOPER
-#define assert(x) if (!(x)) { MessageBoxA(0, #x, "Assertion Failure", MB_OK); __debugbreak(); }
-#else
-#define assert(x)
-#endif
-
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "dependencies/include/stb_image.h"
-#include "dependencies/include/stb_image_write.h"
 
 //
 // Math
@@ -272,16 +269,16 @@ inline i32 ceilFloatToInt(f32 value)
 // round a float value to nearest integer
 inline i32 roundFloatToInt(f32 value)
 {
-    i32 result = (i32)(value + 0.5f);
-    //i32 result = (i32)roundf(value);
+    //i32 result = (i32)(value + 0.5f);
+    i32 result = (i32)roundf(value);
     return result;
 }
 
 // round a float value to nearest unsigned integer
 inline u32 roundFloatToUInt(f32 value)
 {
-    u32 result = (u32)(value + 0.5f);
-    //u32 result = (u32)roundf(value);
+    //u32 result = (u32)(value + 0.5f);
+    u32 result = (u32)roundf(value);
     return result;
 }
 
@@ -515,22 +512,6 @@ inline f32 noise(f32 x, f32 y, f32 z)
 // Vectors 
 //
 
-#ifndef __cplusplus
-typedef struct {
-    f32 x;
-    f32 y;
-} v2;
-
-typedef union v3 {
-    struct {
-        f32 x, y, z;
-    };
-    struct {
-        f32 r, g, b;
-    };
-} v3;
-#else
-
 union v2 {
     
     struct {
@@ -747,6 +728,88 @@ inline void swapV2(v2 *a, v2 *b)
     b->y = temp.y;
 }
 
+typedef struct {
+    i32 x;
+    i32 y;
+} v2i;
+
+// overloaded operators
+// vector addition: newVector = v1 + v2;
+inline v2i operator+(v2i a, v2i b)
+{
+    v2i result;
+    result.x = a.x + b.x;
+    result.y = a.y + b.y;
+    return result;
+}
+
+// v1 += v2;
+inline v2i &operator+=(v2i &a, v2i b)
+{
+    a = a + b;
+    return a;
+}
+
+// vector subtraction
+inline v2i operator-(v2i a, v2i b)
+{
+    v2i result;
+    result.x = a.x - b.x;
+    result.y = a.y - b.y;
+    return result;
+}
+
+inline v2i operator-=(v2i &a, v2i b)
+{
+    a = a - b;
+    return a;
+}
+
+// vector multiplication with a scalar number (vector scaling)
+inline v2i operator*(i32 scalar, v2i a)
+{
+    v2i result;
+    result.x = scalar * a.x;
+    result.y = scalar * a.y;
+    return result;
+}
+
+inline v2i operator*(v2i a, i32 scalar)
+{
+    v2i result = scalar * a;
+    return result;
+}
+
+inline v2i &operator*=(v2i &a, i32 scalar)
+{
+    a = scalar * a;
+    return a;
+}
+
+//divide by a scalar number
+inline v2i operator/(i32 scalar, v2i a)
+{
+    v2i result;
+    result.x = scalar / a.x;
+    result.y = scalar / a.y;
+    return result;
+}
+
+inline v2i operator/(v2i a, i32 scalar)
+{
+    v2i result;
+    result.x = a.x / scalar;
+    result.y = a.y / scalar;
+    return result;
+}
+
+inline v2i &operator/=(v2i &a, i32 scalar)
+{
+    a.x /= scalar;
+    a.y /= scalar;
+    return a;
+}
+
 // Vector3
 
 union v3 {
@@ -862,91 +925,6 @@ inline v3 operator-(v3 a)
     result.z = -a.z;
     
     return result;
-}
-
-
-#endif
-
-typedef struct {
-    i32 x;
-    i32 y;
-} v2i;
-
-// overloaded operators
-// vector addition: newVector = v1 + v2;
-inline v2i operator+(v2i a, v2i b)
-{
-    v2i result;
-    result.x = a.x + b.x;
-    result.y = a.y + b.y;
-    return result;
-}
-
-// v1 += v2;
-inline v2i &operator+=(v2i &a, v2i b)
-{
-    a = a + b;
-    return a;
-}
-
-// vector subtraction
-inline v2i operator-(v2i a, v2i b)
-{
-    v2i result;
-    result.x = a.x - b.x;
-    result.y = a.y - b.y;
-    return result;
-}
-
-inline v2i operator-=(v2i &a, v2i b)
-{
-    a = a - b;
-    return a;
-}
-
-// vector multiplication with a scalar number (vector scaling)
-inline v2i operator*(i32 scalar, v2i a)
-{
-    v2i result;
-    result.x = scalar * a.x;
-    result.y = scalar * a.y;
-    return result;
-}
-
-inline v2i operator*(v2i a, i32 scalar)
-{
-    v2i result = scalar * a;
-    return result;
-}
-
-inline v2i &operator*=(v2i &a, i32 scalar)
-{
-    a = scalar * a;
-    return a;
-}
-
-//divide by a scalar number
-inline v2i operator/(i32 scalar, v2i a)
-{
-    v2i result;
-    result.x = scalar / a.x;
-    result.y = scalar / a.y;
-    return result;
-}
-
-inline v2i operator/(v2i a, i32 scalar)
-{
-    v2i result;
-    result.x = a.x / scalar;
-    result.y = a.y / scalar;
-    return result;
-}
-
-inline v2i &operator/=(v2i &a, i32 scalar)
-{
-    a.x /= scalar;
-    a.y /= scalar;
-    return a;
 }
 
 typedef union v4 {
@@ -1730,22 +1708,17 @@ updateMouse(ButtonState *button, b32 isDown)
 char *loadTextFile(char *filename)
 {
     char *contents = 0;
-    FILE *file = fopen(filename, "r");
+    FILE *file = fopen(filename, "rb");
 
     if (file)
     {
-        fseek(file, 0, SEEK_END);				//go to end of file
-        size_t fileSize = ftell(file);			//get file size
-        fseek(file, 0, SEEK_SET);				//go to beginning of file
-        contents = (char *)malloc(fileSize + 1);	//allocate memory for file + 1 byte for null terminator
+        fseek(file, 0, SEEK_END);				    // go to end of file
+        size_t fileSize = ftell(file);			    // get file size
+        fseek(file, 0, SEEK_SET);				    // go to beginning of file
+        contents = (char *)malloc(fileSize + 1);	// allocate memory for file + 1 byte for null terminator
 
-        //clear memory
-        //for (u32 i = 0; i < fileSize + 1; i++) {
-         //   contents[i] = 0;
-        //}
-
-        fread(contents, fileSize, 1, file);		//read in the file
-        contents[fileSize] = 0;					//insert the null terminator
+        fread(contents, fileSize, 1, file);		    // read in the file
+        contents[fileSize] = 0;					    // insert the null terminator
 
         fclose(file);
     }
@@ -1826,7 +1799,7 @@ global v2 center;
 
 void draw();
 void setup();
-void shutdown();
+void cleanup();
 void initOpenGL();
 void buildFont(const char *fontName, int fontSize);
 void set3dProjection(i32 width, i32 height, f32 fov, f32 nearZ, f32 farZ);
@@ -2017,47 +1990,70 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
     // Main loop
     while (platformState.running) {
         /* Input */
+        for (int i = 0; i < MOUSE_BUTTONS_COUNT; i++) input.mouseButtons[i].changed = false;
         input.mouseWheelDelta = 0;
+
         MSG message;
-        while (PeekMessageA(&message, platformState.window, 0, 0, PM_REMOVE))
-        {
-            switch (message.message)
-            {
-            case WM_SYSKEYDOWN:
-            case WM_SYSKEYUP:
-            case WM_KEYDOWN:
-            case WM_KEYUP:
-            {
-                u32 keyCode = (u32)message.wParam;
-                b32 wasDown = ((message.lParam & (1 << 30)) != 0);
-                b32 isDown = ((message.lParam & (1 << 31)) == 0);
-                b32 altDown = message.lParam & (1 << 29);
+        while (PeekMessageA(&message, platformState.window, 0, 0, PM_REMOVE)) {
+            switch (message.message) {
+                case WM_LBUTTONDOWN: {
+                    updateMouse(&input.mouseButtons[MOUSE_LEFT], true);
+                } break;
+                
+                case WM_LBUTTONUP: {
+                    updateMouse(&input.mouseButtons[MOUSE_LEFT], false);
+                } break;
+                
+                case WM_MBUTTONDOWN: {
+                    updateMouse(&input.mouseButtons[MOUSE_MIDDLE], true);
+                } break;
+                
+                case WM_MBUTTONUP: {
+                    updateMouse(&input.mouseButtons[MOUSE_MIDDLE], false);
+                    
+                } break;
+                
+                case WM_RBUTTONDOWN: {
+                    updateMouse(&input.mouseButtons[MOUSE_RIGHT], true);
+                } break;
+                
+                case WM_RBUTTONUP: {
+                    updateMouse(&input.mouseButtons[MOUSE_RIGHT], false);
+                } break;
+            
+                case WM_SYSKEYDOWN:
+                case WM_SYSKEYUP:
+                case WM_KEYDOWN:
+                case WM_KEYUP: {
+                    u32 keyCode = (u32)message.wParam;
+                    b32 wasDown = ((message.lParam & (1 << 30)) != 0);
+                    b32 isDown = ((message.lParam & (1 << 31)) == 0);
+                    b32 altDown = message.lParam & (1 << 29);
 
-                if (keyCode == VK_F4 && altDown) {
-                    platformState.running = false;
-                    break;
+                    if (keyCode == VK_F4 && altDown) {
+                        platformState.running = false;
+                        break;
+                    }
+
+                    if (keyCode == VK_RETURN && altDown && isDown && isDown != wasDown) {
+                        if (platformState.fullscreen)
+                            platformState.fullscreen = false;
+                        else
+                            platformState.fullscreen = true;
+                        toggleFullscreen();
+                        break;
+                    }
+
+                    if (keyCode == VK_ESCAPE) {
+                        platformState.running = false;
+                        break;
+                    }
+                } break;
+
+                default: {
+                    TranslateMessage(&message);
+                    DispatchMessage(&message);
                 }
-
-                if (keyCode == VK_RETURN && altDown && isDown && isDown != wasDown) {
-                    if (platformState.fullscreen)
-                        platformState.fullscreen = false;
-                    else
-                        platformState.fullscreen = true;
-                    toggleFullscreen();
-                    break;
-                }
-
-                if (keyCode == VK_ESCAPE) {
-                    platformState.running = false;
-                    break;
-                }
-            } break;
-
-            default:
-            {
-                TranslateMessage(&message);
-                DispatchMessage(&message);
-            }
             }
         }
 
@@ -2088,14 +2084,6 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
         input.mouseX = mouseX = mouseP.x/aspectX;
         input.mouseY = mouseY = mouseP.y/aspectX; // NOTE: if BOTTOM up DIB: backBuffer.height-mouseP.y;
         
-        // MSB is set to 1 if the button is down
-        updateMouse(&input.mouseButtons[0],
-            GetKeyState(VK_LBUTTON) & (1 << 15));
-        updateMouse(&input.mouseButtons[1],
-            GetKeyState(VK_MBUTTON) & (1 << 15));
-        updateMouse(&input.mouseButtons[2],
-            GetKeyState(VK_RBUTTON) & (1 << 15));
-
         if (input.mouseX != input.prevMouseX || input.mouseY != input.prevMouseY)
             input.mouseMoved = true;
         else
@@ -2204,7 +2192,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
         frameCount++;
     }
 
-    shutdown();
+    cleanup();
 
 #ifdef NOCRT
     ExitProcess(0);
@@ -4272,3 +4260,51 @@ u32 getTicks()
     u32 result = GetTickCount();
     return result;
 }
+
+/*
+------------------------------------------------------------------------------
+This software is available under 2 licenses - you may choose the one you like.
+------------------------------------------------------------------------------
+
+ALTERNATIVE A - zlib license
+Copyright (c) 2020 Martin Fairbanks
+This software is provided 'as-is', without any express or implied warranty.
+In no event will the authors be held liable for any damages arising from
+the use of this software.
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+    1. The origin of this software must not be misrepresented; you must not
+        claim that you wrote the original software. If you use this software
+        in a product, an acknowledgment in the product documentation would be
+        appreciated but is not required.
+    2. Altered source versions must be plainly marked as such, and must not
+        be misrepresented as being the original software.
+    3. This notice may not be removed or altered from any source distribution.
+
+------------------------------------------------------------------------------
+
+ALTERNATIVE B - Public Domain (www.unlicense.org)
+
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute this 
+software, either in source code form or as a compiled binary, for any purpose, 
+commercial or non-commercial, and by any means.
+
+In jurisdictions that recognize copyright laws, the author or authors of this 
+software dedicate any and all copyright interest in the software to the public 
+domain. We make this dedication for the benefit of the public at large and to 
+the detriment of our heirs and successors. We intend this dedication to be an 
+overt act of relinquishment in perpetuity of all present and future rights to 
+this software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN 
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION 
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+------------------------------------------------------------------------------
+*/

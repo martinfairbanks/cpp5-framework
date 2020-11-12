@@ -1,5 +1,5 @@
 @echo off
-set CompilerFlags=-MTd -nologo -fp:fast -Gm- -GR- -EHa- -Od -Oi -W4 -WX -wd4100 -wd4201 -wd4189 -wd4706 -wd4996 -wd4127 -Z7 -FC -DDEVELOPER=1 -DCOMPILER_MSVC=1
+set CompilerFlags=-MTd -nologo -fp:fast -Gm- -GR- -EHa- -Od -Oi -W4 -WX -wd4100 -wd4201 -wd4189 -wd4706 -wd4996 -wd4127 -Z7 -FC -DDEVELOPER=1 -DDEBUGGER_MSVC=1
 set LinkerFlags=-incremental:no -opt:ref -subsystem:windows
 
 IF NOT EXIST build mkdir build
@@ -8,7 +8,7 @@ pushd build
     cl %CompilerFlags% ../examples/3d_shapes.cpp -link %LinkerFlags%
 
     REM 64-bit build release build with dynamically linked c-runtime library
-    REM cl -MD ..\examples\input.cpp -link -subsystem:windows
+    REM cl -MD -O2 -fp:fast ..\examples\3d_shapes.cpp -link -subsystem:windows
 popd
 
 REM Compiler switches
