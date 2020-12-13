@@ -10,9 +10,14 @@
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
 
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_DEPRECATE
+
+#pragma warning( disable : 4100; disable : 4201; disable: 4996 )
+
 #ifdef NOCRT
 #define _NO_CRT_STDIO_INLINE
-int _fltused; // for floating point
+extern "C" int _fltused = 0; // for floating point
 #endif
 
 #include <windows.h>
@@ -26,8 +31,8 @@ int _fltused; // for floating point
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "dependencies/include/stb_image.h"
-#include "dependencies/include/stb_image_write.h"
+#include "ext/include/stb_image.h"
+#include "ext/include/stb_image_write.h"
 
 typedef int8_t i8;
 typedef int16_t i16;
@@ -205,8 +210,7 @@ static void *stb__raw_sbgrowf(void *arr, int increment, int itemsize)
             p[1] = 0;
         p[0] = m;
         return p + 2;
-    }
-    else {
+    } else {
         return (void *)(2 * sizeof(int));
     }
 }
@@ -488,7 +492,7 @@ inline f32 montecarlo()
 // Noise
 //
 
-#include "dependencies/include/slang_library_noise.cpp"
+#include "ext/include/slang_library_noise.cpp"
 //1D Perlin noise, returns noise value at specified coordinate, the value is always between 0 and 1.
 inline f32 noise(f32 x)
 {
@@ -1916,10 +1920,12 @@ void createCanvas(i32 winWidth = 100, i32 winHeight = 100, const char *caption =
         quitError("Failed to initialize window class.");
     }
 
-    if (!(platformState.window = CreateWindowExA(0, windowClass.lpszClassName, caption,
+    platformState.window = CreateWindowExA(0, windowClass.lpszClassName, caption,
         WS_OVERLAPPEDWINDOW | WS_VISIBLE, // WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU |
         CW_USEDEFAULT, CW_USEDEFAULT,
-        winWidth, winHeight, 0, 0, 0, 0))) {
+        winWidth, winHeight, 0, 0, 0, 0);
+
+    if (!(platformState.window)) {
         quitError("Failed to create window.");
     }
 
@@ -1992,7 +1998,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
         /* Input */
         for (int i = 0; i < MOUSE_BUTTONS_COUNT; i++) input.mouseButtons[i].changed = false;
         input.mouseWheelDelta = 0;
-
+        
         MSG message;
         while (PeekMessageA(&message, platformState.window, 0, 0, PM_REMOVE)) {
             switch (message.message) {
@@ -2149,8 +2155,8 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
         //
         LARGE_INTEGER endCounter;
         QueryPerformanceCounter(&endCounter);
-        i64 counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
 #if 0
+        i64 counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
         f32 secondsElapsedForFrame = getSecondsElapsed(lastCounter, endCounter);
         if (platformState.lockFPS) {
             if (secondsElapsedForFrame < deltaTime) {
@@ -2860,11 +2866,11 @@ void circle(i32 x, i32 y, i32 radius)
         glBegin(GL_TRIANGLE_FAN);
         glVertex2i(x, y);
         for (f32 angle = 0.f; angle < TWO_PI; angle += 0.1f) {
-            glVertex2f((f32)(x + cos(angle) * radius), (f32)(y + sin(angle) * radius));
+            glVertex2f((f32)(x + cosinus(angle) * radius), (f32)(y + sinus(angle) * radius));
         }
 
         // close the circle
-        glVertex2f((f32)x + (f32)cos(TWO_PI) * (f32)radius, (f32)y + (f32)sin(TWO_PI) * (f32)radius);
+        glVertex2f((f32)x + (f32)cosinus(TWO_PI) * (f32)radius, (f32)y + (f32)sinus(TWO_PI) * (f32)radius);
         glEnd();
         glColor4f(platformState.strokeColor.r, platformState.strokeColor.g, platformState.strokeColor.b, platformState.strokeColor.a);
     }
@@ -2872,7 +2878,7 @@ void circle(i32 x, i32 y, i32 radius)
     if (platformState.lineWidth > 0) {
         glBegin(GL_LINE_STRIP);
         for (f32 angle = 0; angle < PI * 4; angle += (PI / 50.0f)) {
-            glVertex2f((f32)(x + sin(angle) * radius), (f32)(y + cos(angle) * radius));
+            glVertex2f((f32)(x + sinus(angle) * radius), (f32)(y + cosinus(angle) * radius));
         }
         glEnd();
     }
@@ -2915,7 +2921,7 @@ void arc(i32 x, i32 y, i32 r1, i32 r2, f32 start, f32 end)
     if (platformState.lineWidth > 0) {
         glBegin(GL_LINE_STRIP);
         for (f32 angle = start; angle <= end; angle += 0.02f)
-            glVertex2f((f32)(x + cos(angle) * r1), (f32)(y + sin(angle) * r2));
+            glVertex2f((f32)x + cosinus(angle) * (f32)r1, (f32)y + sinus(angle) * (f32)r2);
 
         glEnd();
     }
@@ -3277,17 +3283,17 @@ void torus(f32 majorRadius, f32 minorRadius, i32 numMajor = 61, i32 numMinor = 3
     for (i = 0; i < numMajor; ++i) {
         f64 a0 = i * majorStep;
         f64 a1 = a0 + majorStep;
-        f32 x0 = (f32)cos(a0);
-        f32 y0 = (f32)sin(a0);
-        f32 x1 = (f32)cos(a1);
-        f32 y1 = (f32)sin(a1);
+        f32 x0 = cosinus((f32)a0);
+        f32 y0 = sinus((f32)a0);
+        f32 x1 = cosinus((f32)a1);
+        f32 y1 = sinus((f32)a1);
 
         glBegin(GL_TRIANGLE_STRIP);
         for (j = 0; j <= numMinor; ++j) {
             f64 b = j * minorStep;
-            f32 c = (f32)cos(b);
+            f32 c = cosinus((f32)b);
             f32 r = minorRadius * c + majorRadius;
-            f32 z = minorRadius * (f32)sin(b);
+            f32 z = minorRadius * sinus((f32)b);
 
             glTexCoord2f((f32)(i) / (f32)(numMajor), (f32)(j) / (f32)(numMinor));
             normal.x = x0 * c;

@@ -1,13 +1,14 @@
-﻿/* 	3D Shapes 
+﻿/* 	Shapes 
+	Demonstration of basic shapes in 3D that can be drawn using the framework.
+	
 	Copyright (c) 2020 Martin Fairbanks
    	This example has been created using the cpp5 framework.
     Licensing information can be found in the cpp5_framework.h file.
-	
-	Demonstration of basic 3D shapes that can be drawn using the framework.
 */
 
 #include "../cpp5_framework.h"
-f32 angle = 0.f;
+
+global f32 angle;
 
 void setup()
 {

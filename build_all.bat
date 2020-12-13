@@ -1,14 +1,21 @@
 @echo off
-set CompilerFlags=-MTd -nologo -fp:fast -Gm- -GR- -EHa- -Od -Oi -W4 -WX -wd4100 -wd4201 -wd4189 -wd4706 -wd4996 -wd4127 -Z7 -FC -DDEVELOPER=0 -DDEBUGGER_MSVC=1
+set CompilerFlags=-nologo -MT -O2 -fp:fast -Gm- -GR- -EHa- -W4 -WX -wd4100 -wd4201 -wd4189 -wd4706 -wd4996 -wd4127 -FC -DDEVELOPER=0 -DDEBUGGER_MSVC=1
 set LinkerFlags=-incremental:no -opt:ref -subsystem:windows
 
 IF NOT EXIST build mkdir build
 pushd build
     REM 64-bit debug build with statically linked c-runtime library
-    REM cl %CompilerFlags% ../code\examples_git/shapes.cpp -link %LinkerFlags%
+    REM cl %CompilerFlags% ..\code\examples_git\shapes.cpp -link %LinkerFlags%
 
     REM 64-bit build release build with statically linked c-runtime library
-    cl -MT -O2 -fp:fast ../code/examples/shapes.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/shapes.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/lissajous_curves.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/stars2d.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/stars3d.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/test_input.cpp -link %LinkerFlags%
+    del *.obj
+   REM del *.exp
+   REM del *.lib
 popd
 
 REM Compiler switches

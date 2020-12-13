@@ -14,22 +14,21 @@ struct Attractor
 	{
 		//ellipseMode(CENTER);
 		//strokeWeight(4);
-		if (dragging) {
+		if (dragging)
 			fill(red);
-		}
-		else if (rollover) {
+		else if (rollover)
 			fill(blue);
-		}
-		else {
+		else 
 			fill(green);
-		}
+
 		circle(position.x, position.y, (f32)(mass * 2));
 	};
 
 	void handlePress(i32 mx, i32 my)
 	{
 		f32 d = dist(v2((f32)mx, (f32)my), position);
-		if (d < mass * 2) {
+		if (d < mass * 2)
+		{
 			dragging = true;
 			dragOffset.x = position.x - mx;
 			dragOffset.y = position.y - my;
@@ -39,12 +38,10 @@ struct Attractor
 	void handleHover(i32 mx, i32 my)
 	{
 		f32 d = dist(v2((f32)mx, (f32)my), position);
-		if (d < mass * 2) {
+		if (d < mass * 2)
 			rollover = true;
-		}
-		else {
+		else
 			rollover = false;
-		}
 	};
 
 	void stopDragging()
@@ -54,7 +51,8 @@ struct Attractor
 
 	void handleDrag(i32 mx, i32 my)
 	{
-		if (dragging) {
+		if (dragging)
+		{
 			position.x = mx + dragOffset.x;
 			position.y = my + dragOffset.y;
 		}
