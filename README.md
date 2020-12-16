@@ -126,10 +126,16 @@ dist(p1, p2);
    
 ---
 ## **Examples**
-### shapes
-Demonstration of basic shapes in 3D that can be drawn using the framework.
-    
-### vectors
+### framework_2d_shapes_and_colors
+Demonstration of basic 2D primitives that can be drawn using the framework.
+
+### framework_3d_shapes
+Demonstration of basic 3D primitives that can be drawn using the framework.
+
+### framework_image_3d_model
+Loading and drawing an image and a 3d model.
+	
+### framework_vectors
 Example of vector math. Shows how to add, subtract, scale, normalize and calculate the magnitude
 (length) of vectors.
 

@@ -8,15 +8,20 @@ pushd build
     REM cl %CompilerFlags% ..\code\examples_git\shapes.cpp -link %LinkerFlags%
 
     REM 64-bit build release build with statically linked c-runtime library
-    cl %CompilerFlags% ../code/examples/shapes.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/framework_2d_shapes_and_colors.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/framework_3d_shapes.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/framework_image_3d_model.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/framework_vectors.cpp -link %LinkerFlags%
+
     cl %CompilerFlags% ../code/examples/lissajous_curves.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/stars2d.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/stars3d.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/snow.cpp -link %LinkerFlags%
-    cl %CompilerFlags% ../code/examples/vectors.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/test/test_cpp5_input.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/test/test_cpp5_math.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/test/test_cpp5_opengl.cpp -link %LinkerFlags%
+    
+
     
 
     del *.obj

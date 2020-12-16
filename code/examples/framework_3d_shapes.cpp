@@ -1,5 +1,5 @@
-﻿/* 	Shapes 
-	Demonstration of basic shapes in 3D that can be drawn using the framework.
+﻿/* 	3D Shapes 
+	Demonstration of basic 3D primitives that can be drawn using the framework.
 	
 	Copyright (c) 2020 Martin Fairbanks
    	This example has been created using the cpp5 framework.
