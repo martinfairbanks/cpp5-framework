@@ -4,8 +4,10 @@ A small implementation in C++ (mostly C) of the Processing and p5.js frameworks 
 ### **Build**:
 Install [Visual Studio Community 2019](https://visualstudio.microsoft.com/).
 Run shell.bat to setup the Visual Studio build tools.
-    Note: Change shell.bat if you installed Visual Studio on a different location.
+Note: Change shell.bat if you installed Visual Studio on a different location.
 Run build_all.bat to build all examples.
+
+---
 
 ## **Framework API**
 ## Vectors
@@ -28,37 +30,44 @@ Run build_all.bat to build all examples.
         you can also think of it as an x- and y-coordinate:
             v2 vec = v2(10.f, 5.f);
 
-    Vector initializiation
-    v2i vec = v2i(1, 1);
-    v2 vec = { 1.f, 1.f };
-    v2 vec = v2(2.f, 2.f);
-    v3 vec = v3(2.f, 2.f, 2.f);
-    v4 vec = v4(2.f, 2.f, 2.f,, 2.f);
-    v2 vec{ 1.f, 1.f };
-        
-    Operator overloads
-    vec1 + vec2;
-    vec1 - vec2;
-    vec1 * 0.5f;
-    vec1 / 2;
-    -vec1;
-    
-    Methods
-    vec.length()
-    vec.heading();
-    vec.setLength(10);
-    vec.setAngle(3.f);
-    vec.limit(2);
-    vec.normalize();
-    
-    Functions
-    v2Hadamard(vec1, vec2);
-    v2DotProduct(vec1, vec2);
-    v2Add(vec1, vec2);
-	v2Sub(vec1, vec2);
-    v2Mul(vec1, 2.0f);
-    dist(p1, p2);
-        
+### Vector initializiation
+```
+v2i vec = v2i(1, 1);
+v2 vec = { 1.f, 1.f };
+v2 vec = v2(2.f, 2.f);
+v3 vec = v3(2.f, 2.f, 2.f);
+v4 vec = v4(2.f, 2.f, 2.f,, 2.f);
+v2 vec{ 1.f, 1.f };
+```
+
+### Operator overloads
+```
+vec1 + vec2;
+vec1 - vec2;
+vec1 * 0.5f;
+vec1 / 2;
+-vec1;
+``` 
+### Methods
+```
+vec.length()
+vec.heading();
+vec.setLength(10);
+vec.setAngle(3.f);
+vec.limit(2);
+vec.normalize();
+```
+
+### Functions
+```
+v2Hadamard(vec1, vec2);
+v2DotProduct(vec1, vec2);
+v2Add(vec1, vec2);
+v2Sub(vec1, vec2);
+v2Mul(vec1, 2.0f);
+dist(p1, p2);
+```     
+
     v2 result = v2Add(vec1, vec2);
        Vector addition, c-style.
     
@@ -100,7 +109,8 @@ Run build_all.bat to build all examples.
         Limit the magnitude of the vector.
     
     vec.normalize();
-        Calculate a unit vector. Normalizing a vector makes its length equal to 1. To normalize a vector - divide each component by its length.
+        Calculate a unit vector. Normalizing a vector makes its length equal to 1. To normalize a
+        vector - divide each component by its length.
     
     v2 result = v2Hadamard(vec1, vec2);
         The hadamard product - element-wise product of two vectors which return a new vector.
@@ -114,24 +124,26 @@ Run build_all.bat to build all examples.
         Using the Pythagorean Theorem to calculate the distance between 2 points, returns a float, same as
         calculating a vectors length.
    
-
+---
 ## **Examples**
-    shapes
-        Demonstration of basic shapes in 3D that can be drawn using the framework.
+### shapes
+Demonstration of basic shapes in 3D that can be drawn using the framework.
     
-    vectors
-        Example of vector math. Shows how to add, subtract, scale, normalize and calculate the magnitude
-        (length) of vectors.
+### vectors
+Example of vector math. Shows how to add, subtract, scale, normalize and calculate the magnitude
+(length) of vectors.
 
-    lissajous_curves
-	    A couple of examples of Lissajous curves.
+### lissajous_curves
+A couple of examples of Lissajous curves.
+[wikipedia](https://en.wikipedia.org/wiki/Lissajous_curve).
 
-    snow
-        Falling snowfakes.
+### snow
 
-    stars2d
-        2D starfield.
+Falling snowfakes.
 
-    stars3d
-        3D starfield.
+### stars2d
+2D starfield.
+
+### stars3d
+3D starfield.
 
