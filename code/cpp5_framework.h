@@ -712,7 +712,7 @@ inline f32 dist(v2 a, v2 b)
     return squareRoot((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
-//random 2d direction
+// random 2d direction
 inline v2 random2d()
 {
     v2 vec = v2(1.0, 1.0);
@@ -721,7 +721,7 @@ inline v2 random2d()
     return vec;
 }
 
-inline void swapV2(v2 *a, v2 *b)
+inline void v2Swap(v2 *a, v2 *b)
 {
     v2 temp;
     temp.x = a->x;
@@ -1025,7 +1025,7 @@ inline f32 v3DotProduct(v3 a, v3 b)
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-//calculate the cross product of two vectors
+// calculate the cross product of two vectors
 inline v3 v3CrossProduct(v3 v1, v3 v2)
 {
     v3 vResult;
@@ -1035,7 +1035,7 @@ inline v3 v3CrossProduct(v3 v1, v3 v2)
     return vResult;
 }
 
-// calculate the unit normal from 3 point on a plane in CCW-order
+// calculate the unit normal from 3 points on a plane in CCW-order
 v3 v3GetNormalVector(v3 vP1, v3 vP2, v3 vP3)
 {
     v3 vV1, vV2;
@@ -1051,13 +1051,13 @@ v3 v3GetNormalVector(v3 vP1, v3 vP2, v3 vP3)
 // gets the three coefficients of a plane equation given three points on the plane
 void v3GetPlaneEquation(v3 vPoint1, v3 vPoint2, v3 vPoint3, f32 vPlane[4])
 {
-    // Get normal vector from three points. The normal vector is the first three coefficients
-    // to the plane equation...
+    // get normal vector from three points
+    // the normal vector is the first three coefficients to the plane equation
     v3 vP = v3GetNormalVector(vPoint1, vPoint2, vPoint3);
     vPlane[0] = vP.x;
     vPlane[1] = vP.y;
     vPlane[2] = vP.z;
-    // Final coefficient found by back substitution
+    // final coefficient found by back substitution
     vPlane[3] = -(vPlane[0] * vPoint3.x + vPlane[1] * vPoint3.y + vPlane[2] * vPoint3.z);
 }
 

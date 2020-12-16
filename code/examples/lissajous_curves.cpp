@@ -1,10 +1,6 @@
 ﻿/* 	Lissajous Curves 
 	A couple of examples of Lissajous curves.
 
-	Copyright (c) 2020 Martin Fairbanks
-	This example has been created using the cpp5 framework.
-	Licensing information can be found in the cpp5_framework.h file.
-
 	some common inputs with odd and even numbers:
 		a = 1, b = 2 (1:2) = xSpeed = .1, ySpeed = .2;
 		a = 3, b = 2 (3:2)
@@ -14,6 +10,11 @@
 		a = 7, b = 6 (7:6)
 
 		https://en.wikipedia.org/wiki/Lissajous_curve
+
+	Copyright (c) 2020 Martin Fairbanks
+	This example has been created using the cpp5 framework.
+	Licensing information can be found in the cpp5_framework.h file.
+
 */
 
 #include "../cpp5_framework.h"

@@ -1,5 +1,5 @@
 @echo off
-set CompilerFlags=-nologo -MT -O2 -fp:fast -Gm- -GR- -EHa- -W4 -WX -wd4100 -wd4201 -wd4189 -wd4706 -wd4996 -wd4127 -FC -DDEVELOPER=0 -DDEBUGGER_MSVC=1
+set CompilerFlags=-nologo -MT -O2 -fp:fast -Gm- -GR- -EHa- -W4 -WX -wd4100 -wd4201 -wd4189 -wd4706 -wd4996 -wd4127 -FC -DDEBUGGER_MSVC=1
 set LinkerFlags=-incremental:no -opt:ref -subsystem:windows
 
 IF NOT EXIST build mkdir build
@@ -12,7 +12,13 @@ pushd build
     cl %CompilerFlags% ../code/examples/lissajous_curves.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/stars2d.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/stars3d.cpp -link %LinkerFlags%
-    cl %CompilerFlags% ../code/examples/test_input.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/snow.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/vectors.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/test/test_cpp5_input.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/test/test_cpp5_math.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/test/test_cpp5_opengl.cpp -link %LinkerFlags%
+    
+
     del *.obj
    REM del *.exp
    REM del *.lib
