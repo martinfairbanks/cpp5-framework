@@ -22,7 +22,8 @@ void setup()
 	stroke(white);
 
 	//init snowflakes
-	for (int i = 0; i < arrayCount(snow); i++) {
+	for (int i = 0; i < arrayCount(snow); i++)
+	{
 		snow[i].x = rand() % width;
 		snow[i].y = rand() % height;
 		snow[i].layer = rand() % MAX_LAYERS;

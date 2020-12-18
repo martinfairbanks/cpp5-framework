@@ -301,6 +301,15 @@ inline f32 square(f32 a)
     return result;
 }
 
+// raise base to n-th power, n must: n >= 0
+f32 powerOf(f32 base, f32 n)
+{
+    f32 result;
+    for (result = 1; n > 0; --n)
+        result = result * base;
+    return result;
+}
+
 // an absolute value is defined as the distance from zero, absoluteValue(-5) will return 5
 inline f32 absoluteValue(f32 value)
 {
@@ -413,14 +422,14 @@ inline f32 arcCosine(f32 angle)
     return result;
 }
 
-//convert radians to degrees
+// convert radians to degrees
 inline f32 degrees(f32 radians)
 {
     f32 degrees = (radians / TWO_PI) * 360;
     return degrees;
 }
 
-//convert degrees to radians
+// convert degrees to radians
 inline f32 radians(f32 degrees)
 {
     f32 radians = (degrees / 360) * TWO_PI;
@@ -443,49 +452,69 @@ inline void randomSeed(u32 value)
 inline i32 random(i32 min, i32 max)
 {
     /* ex:  Random(-10,20) -> will give -10 to, and including, 20. */
-    max += 1;
-    min -= 1;
-    return i32(rand() / (f32)(RAND_MAX + 1) * (max - min) + min);
+    return i32(rand() % (max - min + 1)) + min;
 }
 
 // returns random integer between 0 and max
 inline i32 random(i32 max)
 {
-    // i32 min = -1;
-    max += 1;
-    return i32(rand() / (f32)(RAND_MAX + 1) * (max));
+    return i32(rand() % (max - 0 + 1)) + 0;
 }
 
-// returns a random float between 0 and 1
-inline f32 randomf()
+// returns a random float between 0 max
+// if no argument is given, returns a random number from 0 up to 1
+inline f32 random(f32 max = 1.f)
 {
-    return ((f32)rand() / (RAND_MAX));
-    //random float between -1 and 1
-    //return (((f32)rand() / (RAND_MAX)) * 2 - 1.0f);
+    return ((f32)rand() / (RAND_MAX) * max);
 }
 
 // returns random float between min and max
-inline f32 randomf(f32 min, f32 max)
+inline f32 random(f32 min, f32 max)
 {
-    return min + randomf() * (max - min);
+    return min + random() * (max - min);
 }
 
-//the likelihood that a random value will be picked is equal to the the first random number (r1)
-//returns a random value between 0 and 1
+// the likelihood that a random value will be picked is equal to the the first random number (r1)
+// returns a random value between 0 and 1
 inline f32 montecarlo()
 {
-    //loop until we find a qualifying random number
+    // loop until we find a qualifying random number
     while (true)
     {
-        f32 r1 = randomf();
-        f32 probability = r1;
-        //f32 probability = pow(1.0 - r1, 8);
+        f32 r1 = random();
+        f32 probability = powerOf(1.f - r1, 8.f);
 
-        f32 r2 = randomf();
+        f32 r2 = random();
 
         if (r2 < probability)
             return r1;
     }
+}
+
+std::default_random_engine randomGenerator;
+
+// returns a Gaussian(normal) distribution of random numbers around the mean with a specific standard deviation.
+// the probability of getting values far from the mean is low, the probability of getting numbers near the mean is high.
+inline f32 randomGaussian()
+{
+    //std::default_random_engine randomGenerator;
+    //gaussian random numbers with a mean of 0 and standard deviation of 1.0
+    std::normal_distribution<f32> gaussianDistribution(0.0f, 1.0f);
+    return gaussianDistribution(randomGenerator);
+}
+
+inline f32 randomGaussian(f32 mean)
+{
+    //std::default_random_engine randomGenerator;
+    std::normal_distribution<f32> gaussianDistribution(mean, 1.0f);
+    return gaussianDistribution(randomGenerator);
+}
+
+inline f32 randomGaussian(f32 mean, f32 sd)
+{
+    //std::default_random_engine randomGenerator;
+    std::normal_distribution<f32> gaussianDistribution(mean, sd);
+    return gaussianDistribution(randomGenerator);
 }
 
 //
@@ -717,7 +746,7 @@ inline v2 random2d()
 {
     v2 vec = v2(1.0, 1.0);
     //vec.normalize();
-    vec.setAngle(randomf() * TWO_PI);
+    vec.setAngle(random() * TWO_PI);
     return vec;
 }
 
@@ -1774,6 +1803,7 @@ struct PlatformState {
     b32 fillFlag; // fill flag for shapes
     i32 lineWidth; // strokeweight	
     i32 rectModeFlag;
+    Colorf clearColor;
     Colorf strokeColor;
     Colorf fillColor;
     f32 milliseconds;
@@ -1871,6 +1901,8 @@ windowProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
         else {
             set2dProjection(platformState.windowWidth, platformState.windowHeight);
         }
+        glClearColor(platformState.clearColor.r, platformState.clearColor.g, platformState.clearColor.b, platformState.clearColor.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     } break;
 
 
@@ -1921,7 +1953,7 @@ void createCanvas(i32 winWidth = 100, i32 winHeight = 100, const char *caption =
     }
 
     platformState.window = CreateWindowExA(0, windowClass.lpszClassName, caption,
-        WS_OVERLAPPEDWINDOW | WS_VISIBLE, // WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU |
+        WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU | WS_VISIBLE, //WS_OVERLAPPEDWINDOW |
         CW_USEDEFAULT, CW_USEDEFAULT,
         winWidth, winHeight, 0, 0, 0, 0);
 
@@ -1949,6 +1981,7 @@ void createCanvas(i32 winWidth = 100, i32 winHeight = 100, const char *caption =
     platformState.colorModeFlag = RGB;
     platformState.fillFlag = true;
     platformState.doubleBufferDisabledFlag = false;
+    platformState.clearColor = { 0, 0, 0, 0 };
     platformState.strokeColor = { 255, 255, 255, 255 };
     platformState.fillColor = { 255, 255, 255, 255 };
     platformState.lineWidth = 1;
@@ -1956,6 +1989,9 @@ void createCanvas(i32 winWidth = 100, i32 winHeight = 100, const char *caption =
     platformState.milliseconds = 0;
     input.mouseDragged = false;
     input.mouseMoved = false;
+    randomSeed(GetTickCount());
+    randomGenerator.seed(GetTickCount());
+
 }
 
 #define WinMainNOCRT void __stdcall WinMainCRTStartup() {
@@ -1998,68 +2034,68 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
         /* Input */
         for (int i = 0; i < MOUSE_BUTTONS_COUNT; i++) input.mouseButtons[i].changed = false;
         input.mouseWheelDelta = 0;
-        
+
         MSG message;
         while (PeekMessageA(&message, platformState.window, 0, 0, PM_REMOVE)) {
             switch (message.message) {
-                case WM_LBUTTONDOWN: {
-                    updateMouse(&input.mouseButtons[MOUSE_LEFT], true);
-                } break;
-                
-                case WM_LBUTTONUP: {
-                    updateMouse(&input.mouseButtons[MOUSE_LEFT], false);
-                } break;
-                
-                case WM_MBUTTONDOWN: {
-                    updateMouse(&input.mouseButtons[MOUSE_MIDDLE], true);
-                } break;
-                
-                case WM_MBUTTONUP: {
-                    updateMouse(&input.mouseButtons[MOUSE_MIDDLE], false);
-                    
-                } break;
-                
-                case WM_RBUTTONDOWN: {
-                    updateMouse(&input.mouseButtons[MOUSE_RIGHT], true);
-                } break;
-                
-                case WM_RBUTTONUP: {
-                    updateMouse(&input.mouseButtons[MOUSE_RIGHT], false);
-                } break;
-            
-                case WM_SYSKEYDOWN:
-                case WM_SYSKEYUP:
-                case WM_KEYDOWN:
-                case WM_KEYUP: {
-                    u32 keyCode = (u32)message.wParam;
-                    b32 wasDown = ((message.lParam & (1 << 30)) != 0);
-                    b32 isDown = ((message.lParam & (1 << 31)) == 0);
-                    b32 altDown = message.lParam & (1 << 29);
+            case WM_LBUTTONDOWN: {
+                updateMouse(&input.mouseButtons[MOUSE_LEFT], true);
+            } break;
 
-                    if (keyCode == VK_F4 && altDown) {
-                        platformState.running = false;
-                        break;
-                    }
+            case WM_LBUTTONUP: {
+                updateMouse(&input.mouseButtons[MOUSE_LEFT], false);
+            } break;
 
-                    if (keyCode == VK_RETURN && altDown && isDown && isDown != wasDown) {
-                        if (platformState.fullscreen)
-                            platformState.fullscreen = false;
-                        else
-                            platformState.fullscreen = true;
-                        toggleFullscreen();
-                        break;
-                    }
+            case WM_MBUTTONDOWN: {
+                updateMouse(&input.mouseButtons[MOUSE_MIDDLE], true);
+            } break;
 
-                    if (keyCode == VK_ESCAPE) {
-                        platformState.running = false;
-                        break;
-                    }
-                } break;
+            case WM_MBUTTONUP: {
+                updateMouse(&input.mouseButtons[MOUSE_MIDDLE], false);
 
-                default: {
-                    TranslateMessage(&message);
-                    DispatchMessage(&message);
+            } break;
+
+            case WM_RBUTTONDOWN: {
+                updateMouse(&input.mouseButtons[MOUSE_RIGHT], true);
+            } break;
+
+            case WM_RBUTTONUP: {
+                updateMouse(&input.mouseButtons[MOUSE_RIGHT], false);
+            } break;
+
+            case WM_SYSKEYDOWN:
+            case WM_SYSKEYUP:
+            case WM_KEYDOWN:
+            case WM_KEYUP: {
+                u32 keyCode = (u32)message.wParam;
+                b32 wasDown = ((message.lParam & (1 << 30)) != 0);
+                b32 isDown = ((message.lParam & (1 << 31)) == 0);
+                b32 altDown = message.lParam & (1 << 29);
+
+                if (keyCode == VK_F4 && altDown) {
+                    platformState.running = false;
+                    break;
                 }
+
+                if (keyCode == VK_RETURN && altDown && isDown && isDown != wasDown) {
+                    if (platformState.fullscreen)
+                        platformState.fullscreen = false;
+                    else
+                        platformState.fullscreen = true;
+                    toggleFullscreen();
+                    break;
+                }
+
+                if (keyCode == VK_ESCAPE) {
+                    platformState.running = false;
+                    break;
+                }
+            } break;
+
+            default: {
+                TranslateMessage(&message);
+                DispatchMessage(&message);
+            }
             }
         }
 
@@ -2086,10 +2122,10 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
             aspectX = 1;
             aspectY = 1;
         }
-        
-        input.mouseX = mouseX = mouseP.x/aspectX;
-        input.mouseY = mouseY = mouseP.y/aspectX; // NOTE: if BOTTOM up DIB: backBuffer.height-mouseP.y;
-        
+
+        input.mouseX = mouseX = mouseP.x / aspectX;
+        input.mouseY = mouseY = mouseP.y / aspectX; // NOTE: if BOTTOM up DIB: backBuffer.height-mouseP.y;
+
         if (input.mouseX != input.prevMouseX || input.mouseY != input.prevMouseY)
             input.mouseMoved = true;
         else
@@ -2155,23 +2191,24 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
         //
         LARGE_INTEGER endCounter;
         QueryPerformanceCounter(&endCounter);
-#if 0
         i64 counterElapsed = endCounter.QuadPart - lastCounter.QuadPart;
-        f32 secondsElapsedForFrame = getSecondsElapsed(lastCounter, endCounter);
-        if (platformState.lockFPS) {
-            if (secondsElapsedForFrame < deltaTime) {
-                i32 msToSleep = (i32)((deltaTime - secondsElapsedForFrame) * 1000.f);
-                if (msToSleep > 0)
-                    Sleep(msToSleep);
+        if (platformState.doubleBufferDisabledFlag) {
+            f32 secondsElapsedForFrame = getSecondsElapsed(lastCounter, endCounter);
+            if (platformState.lockFPS) {
+                if (secondsElapsedForFrame < deltaTime) {
+                    i32 msToSleep = (i32)((deltaTime - secondsElapsedForFrame) * 1000.f);
+                    if (msToSleep > 0)
+                        Sleep(msToSleep);
 
-                // if there is some time left
-                while (secondsElapsedForFrame < deltaTime) {
-                    QueryPerformanceCounter(&endCounter);
-                    secondsElapsedForFrame = getSecondsElapsed(lastCounter, endCounter);
+                    // if there is some time left
+                    while (secondsElapsedForFrame < deltaTime) {
+                        QueryPerformanceCounter(&endCounter);
+                        secondsElapsedForFrame = getSecondsElapsed(lastCounter, endCounter);
+                    }
                 }
             }
         }
-#endif
+    
         QueryPerformanceCounter(&endCounter);
         deltaSecondsPerFrame = getSecondsElapsed(lastCounter, endCounter);
         
@@ -2193,7 +2230,11 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine
             debugPrint("MouseX: %d  MouseY: %d\n", mouseX, mouseY);
             lastTime = secondsElapsedSinceStart;
         }
+#else
+        // just to remove warning about unreferenced variable
+        counterElapsed = 0;
 #endif
+
         QueryPerformanceCounter(&lastCounter);
         frameCount++;
     }
@@ -2632,6 +2673,7 @@ inline void background(Color col, i32 alpha = 255)
     f32 g = newColor.g / 255.f;
     f32 b = newColor.b / 255.f;
     f32 a = (f32)alpha / 255.f;
+    platformState.clearColor = { r, g, b, a };
 
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -2911,6 +2953,11 @@ void ellipse(i32 x, i32 y, i32 r1, i32 r2 = 0)
         }
         glEnd();
     }
+}
+
+void ellipse(f32 x, f32 y, f32 r1, f32 r2 = 0.f)
+{
+    ellipse((i32)x, (i32)y, (i32)r1, (i32)r2);
 }
 
 void arc(i32 x, i32 y, i32 r1, i32 r2, f32 start, f32 end)

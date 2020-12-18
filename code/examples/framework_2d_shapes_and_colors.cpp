@@ -133,16 +133,19 @@ void draw()
 
 	if (!done)
 		circle(x, y, 5.f + sin(a * 4.f) * 150.0f);
-	else {
+	else 
+	{
 		x = 120;
 		a = 0;
 		done = false;
 	}
+	
 	a = a + 0.001f;
 	x++;
 	col = (col + 1) % 255;
 	// when a is 6.28 we have completed one full rotation around the center
-	if (a > TWO_PI - 0.1) {
+	if (a > TWO_PI - 0.1)
+	{
 		a = 0;
 		done = true;
 	}

@@ -139,9 +139,17 @@ Loading and drawing an image and a 3d model.
 Example of vector math. Shows how to add, subtract, scale, normalize and calculate the magnitude
 (length) of vectors.
 
+### framework_random
+Example of random numbers. Shows how to use pseudo-random uniform distribution and Gaussian (normal) distribution
+of numbers.
+
+
 ### lissajous_curves
 A couple of examples of Lissajous curves.
 [wikipedia](https://en.wikipedia.org/wiki/Lissajous_curve).
+
+### random_walker_probability
+Example of random walker algorithms and probability. Levy flight with Monte Carlo algorithm.
 
 ### snow
 
@@ -153,3 +161,12 @@ Falling snowfakes.
 ### stars3d
 3D starfield.
 
+## **Nature of Code**
+A C++ port of the examples from [The Nature of Code](http://natureofcode.com) by Daniel Shiffman.
+    
+    chp00
+    NOC_I_01_RandomWalkTraditional
+    NOC_I_02_RandomDistribution
+    NOC_I_03_RandomWalkTendsToRight
+    NOC_I_04_Gaussian
+    NOC_I_05_NoiseWalk

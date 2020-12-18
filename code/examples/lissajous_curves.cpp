@@ -35,7 +35,7 @@ struct Circles
 
 void setup()
 {
-	createCanvas(960, 540, "Lissajous Curves");
+	createCanvas(960, 540, "Lissajous Curves - Press mouse!");
 	
 	clear(black);
 	
@@ -143,8 +143,6 @@ void draw()
 		if (scene > 7)
 			scene = 0;
 	}
-
-	_sleep(10);
 }
 
 void cleanup() { }

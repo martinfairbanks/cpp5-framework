@@ -12,17 +12,19 @@ pushd build
     cl %CompilerFlags% ../code/examples/framework_3d_shapes.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/framework_image_3d_model.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/framework_vectors.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/framework_random.cpp -link %LinkerFlags%
+        
+    cl %CompilerFlags% ../code/examples/nature_of_code/chap00/NOC_I_01_RandomWalkTraditional.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/nature_of_code/chap00/NOC_I_02_RandomDistribution.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/nature_of_code/chap00/NOC_I_03_RandomWalkTendsToRight.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/nature_of_code/chap00/NOC_I_04_Gaussian.cpp -link %LinkerFlags%
+    cl %CompilerFlags% ../code/examples/nature_of_code/chap00/NOC_I_05_NoiseWalk.cpp -link %LinkerFlags%
 
+    cl %CompilerFlags% ../code/examples/random_walker_probability.cpp  -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/lissajous_curves.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/stars2d.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/stars3d.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/snow.cpp -link %LinkerFlags%
-    cl %CompilerFlags% ../code/test/test_cpp5_input.cpp -link %LinkerFlags%
-    cl %CompilerFlags% ../code/test/test_cpp5_math.cpp -link %LinkerFlags%
-    cl %CompilerFlags% ../code/test/test_cpp5_opengl.cpp -link %LinkerFlags%
-    
-
-    
 
     del *.obj
    REM del *.exp
