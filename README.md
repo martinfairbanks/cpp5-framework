@@ -126,39 +126,45 @@ dist(p1, p2);
    
 ---
 ## **Examples**
-### framework_2d_shapes_and_colors
+#### **framework_2d_shapes_and_colors**
 Demonstration of basic 2D primitives that can be drawn using the framework.
 
-### framework_3d_shapes
+#### **framework_3d_shapes**
 Demonstration of basic 3D primitives that can be drawn using the framework.
 
-### framework_image_3d_model
+#### **framework_image_3d_model**
 Loading and drawing an image and a 3d model.
 	
-### framework_vectors
+#### **framework_vectors**
 Example of vector math. Shows how to add, subtract, scale, normalize and calculate the magnitude
 (length) of vectors.
 
-### framework_random
+#### **framework_random**
 Example of random numbers. Shows how to use pseudo-random uniform distribution and Gaussian (normal) distribution
 of numbers.
 
+#### **framework_perlin_noise**
+Perlin noise produces a naturally ordered (smooth) sequence of pseudo-random numbers.
+We can think of one-dimensional Perlin noise as a linear sequence of values over time. 
+These examples uses an implementation of Perlin Simplex Noise.
+noise() returns a value between 0 and 1.
 
-### lissajous_curves
+#### **lissajous_curves**
+
 A couple of examples of Lissajous curves.
 [wikipedia](https://en.wikipedia.org/wiki/Lissajous_curve).
 
-### random_walker_probability
+#### **random_walker_probability**
 Example of random walker algorithms and probability. Levy flight with Monte Carlo algorithm.
 
-### snow
+#### **snow**
 
 Falling snowfakes.
 
-### stars2d
+#### **stars2d**
 2D starfield.
 
-### stars3d
+#### **stars3d**
 3D starfield.
 
 ## **Nature of Code**

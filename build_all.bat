@@ -13,7 +13,8 @@ pushd build
     cl %CompilerFlags% ../code/examples/framework_image_3d_model.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/framework_vectors.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/framework_random.cpp -link %LinkerFlags%
-        
+    cl %CompilerFlags% ../code/examples/framework_perlin_noise.cpp  -link %LinkerFlags%
+
     cl %CompilerFlags% ../code/examples/nature_of_code/chap00/NOC_I_01_RandomWalkTraditional.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/nature_of_code/chap00/NOC_I_02_RandomDistribution.cpp -link %LinkerFlags%
     cl %CompilerFlags% ../code/examples/nature_of_code/chap00/NOC_I_03_RandomWalkTendsToRight.cpp -link %LinkerFlags%

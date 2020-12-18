@@ -2515,6 +2515,11 @@ void disableDoubleBuffer()
     glDrawBuffer(GL_FRONT);
 }
 
+void enableDoubleBuffer()
+{
+    platformState.doubleBufferDisabledFlag = false;
+    glDrawBuffer(GL_FRONT_AND_BACK);
+}
 
 void set2dProjection(i32 windowWidth = platformState.windowWidth, i32 windowHeight = platformState.windowHeight)
 {
